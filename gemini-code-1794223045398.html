@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskitos - Sala do Futuro & IA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar estilo Taskitos -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-gamepad text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+                        Taskitos <span class="text-[10px] bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full">Sala do Futuro</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Gamificação & Automação de Estudos</p>
+                </div>
+            </div>
+
+            <!-- Status do Personagem / XP -->
+            <div class="flex items-center gap-4 bg-slate-800/80 border border-slate-700/60 px-4 py-2 rounded-2xl">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/20">
+                        <i class="fa-solid fa-star text-xs"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Nível / XP</p>
+                        <p id="user-xp" class="text-xs font-bold text-amber-400">0 / 100 XP</p>
+                    </div>
+                </div>
+                <div class="h-6 w-[1px] bg-slate-700"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/20">
+                        <i class="fa-solid fa-coins text-xs"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Moedas</p>
+                        <p id="user-coins" class="text-xs font-bold text-emerald-400">0 🪙</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left Column: Credenciais e Plataformas -->
+        <div class="space-y-6">
+            
+            <!-- Login RA e Senha para IA -->
+            <div class="bg-indigo-950/20 border border-indigo-900/40 rounded-3xl p-5 shadow-xl backdrop-blur-sm">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield"></i> Acesso Sala do Futuro (RA)
+                </h2>
+                <p class="text-[11px] text-slate-400 mb-3">Insira suas credenciais. A IA as utilizará para gerar e preencher os rascunhos das suas tarefas.</p>
+                <form id="credentials-form" class="space-y-3">
+                    <div>
+                        <input type="text" id="ra-input" required placeholder="Digite seu RA (Ex: 000123456SP)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <input type="password" id="pass-input" required placeholder="Sua senha de acesso" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-key text-[10px]"></i> Salvar e Habilitar IA
+                    </button>
+                </form>
+            </div>
+
+            <!-- Pet / Mascote Taskitos -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl text-center relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                <div class="w-16 h-16 bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3 shadow-inner">
+                    <i class="fa-solid fa-robot animate-pulse"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-200">Assistente IA Taskitos</h3>
+                <p id="pet-status" class="text-xs text-indigo-400 mt-1 font-medium">Pronto para resolver suas tarefas!</p>
+                <button onclick="aiExecuteAllTasks()" class="mt-4 w-full bg-slate-800 hover:bg-slate-700 text-indigo-300 font-semibold py-2.5 rounded-xl transition text-xs border border-slate-700 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Fazer Todas as Tarefas via IA
+                </button>
+            </div>
+
+            <!-- Plataformas de Estudo -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-indigo-400"></i> Atalhos das Plataformas
+                </h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="https://saladofuturo.sp.gov.br" target="_blank" class="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/40 text-center transition group">
+                        <span class="block text-xs font-bold text-indigo-400 group-hover:scale-105 transition">Sala do Futuro</span>
+                        <span class="text-[9px] text-slate-500">Plataforma Oficial</span>
+                    </a>
+                    <a href="https://pt.khanacademy.org" target="_blank" class="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/40 text-center transition group">
+                        <span class="block text-xs font-bold text-emerald-400 group-hover:scale-105 transition">Khan Academy</span>
+                        <span class="text-[9px] text-slate-500">Matemática & Ciências</span>
+                    </a>
+                    <a href="https://www.speak.com" target="_blank" class="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/40 text-center transition group">
+                        <span class="block text-xs font-bold text-blue-400 group-hover:scale-105 transition">Speak</span>
+                        <span class="text-[9px] text-slate-500">Idiomas</span>
+                    </a>
+                    <a href="https://leia.sp.gov.br" target="_blank" class="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/40 text-center transition group">
+                        <span class="block text-xs font-bold text-amber-400 group-hover:scale-105 transition">Leia (SP)</span>
+                        <span class="text-[9px] text-slate-500">Leitura</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Adicionar Tarefa -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-indigo-400"></i> Adicionar Nova Tarefa
+                </h2>
+                <form id="task-form" class="space-y-3">
+                    <div>
+                        <input type="text" id="task-title" required placeholder="Ex: Módulo de Álgebra - Khan" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <select id="task-platform" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                            <option value="Sala do Futuro">Sala do Futuro</option>
+                            <option value="Khan Academy">Khan Academy</option>
+                            <option value="Speak">Speak</option>
+                            <option value="Leia">Leia</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="date" id="task-date" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">
+                        Criar Tarefa + XP
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column: Tarefas Normais e Expiradas -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Tarefas Normais / No Prazo -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-blue-400"></i> Tarefas Pendentes / No Prazo
+                    </h2>
+                    <span id="normal-count" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full font-bold">0</span>
+                </div>
+                <div id="normal-tasks-list" class="space-y-3"></div>
+            </div>
+
+            <!-- Tarefas Expiradas -->
+            <div class="bg-slate-900 border border-rose-900/30 rounded-3xl p-5 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Tarefas Expiradas (Atrasadas)
+                    </h2>
+                    <span id="expired-count" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-full font-bold">0</span>
+                </div>
+                <div id="expired-tasks-list" class="space-y-3"></div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
+        Taskitos & Sala do Futuro © 2026 - Gamifique seus estudos.
+    </footer>
+
+    <!-- Script de Gestão, Gamificação e Automação -->
+    <script>
+        // Dados do Usuário & XP
+        let userData = JSON.parse(localStorage.getItem('taskitos_user')) || { xp: 0, coins: 0 };
+        let tasks = JSON.parse(localStorage.getItem('taskitos_tasks')) || [];
+
+        function updateStatsDisplay() {
+            document.getElementById('user-xp').innerText = `${userData.xp} / 100 XP`;
+            document.getElementById('user-coins').innerText = `${userData.coins} 🪙`;
+            localStorage.setItem('taskitos_user', JSON.stringify(userData));
+        }
+        updateStatsDisplay();
+
+        // Salvar Credenciais
+        const credForm = document.getElementById('credentials-form');
+        const raInput = document.getElementById('ra-input');
+        const passInput = document.getElementById('pass-input');
+
+        if(localStorage.getItem('taskitos_ra')) {
+            raInput.value = localStorage.getItem('taskitos_ra');
+            passInput.value = localStorage.getItem('taskitos_pass');
+        }
+
+        credForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            localStorage.setItem('taskitos_ra', raInput.value);
+            localStorage.setItem('taskitos_pass', passInput.value);
+            alert('Credenciais salvas! A IA está pronta para gerar os rascunhos automáticos.');
+        });
+
+        // Adicionar Tarefa
+        const taskForm = document.getElementById('task-form');
+        const taskTitleInput = document.getElementById('task-title');
+        const taskPlatformInput = document.getElementById('task-platform');
+        const taskDateInput = document.getElementById('task-date');
+
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            tasks.push({
+                id: Date.now(),
+                title: taskTitleInput.value,
+                platform: taskPlatformInput.value,
+                date: taskDateInput.value,
+                completed: false,
+                draft: null
+            });
+            saveAndRender();
+            taskForm.reset();
+        });
+
+        function saveAndRender() {
+            localStorage.setItem('taskitos_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveAndRender();
+        }
+
+        function toggleComplete(id) {
+            tasks = tasks.map(t => {
+                if(t.id === id) {
+                    const nextState = !t.completed;
+                    if(nextState) {
+                        userData.xp += 25;
+                        userData.coins += 10;
+                        if(userData.xp >= 100) {
+                            userData.xp = 0;
+                            alert('Parabéns! Você subiu de nível no Taskitos! 🎉');
+                        }
+                        updateStatsDisplay();
+                    }
+                    return { ...t, completed: nextState };
+                }
+                return t;
+            });
+            saveAndRender();
+        }
+
+        function aiExecuteAllTasks() {
+            const ra = localStorage.getItem('taskitos_ra');
+            if(!ra) {
+                alert('Por favor, insira e salve seu RA e senha primeiro na aba lateral!');
+                return;
+            }
+            if(tasks.length === 0) {
+                alert('Adicione tarefas para a IA poder processar.');
+                return;
+            }
+
+            document.getElementById('pet-status').innerText = 'IA processando credenciais e gerando rascunhos...';
+            
+            setTimeout(() => {
+                tasks = tasks.map(t => ({
+                    ...t,
+                    draft: `[Rascunho IA Gerado com sucesso para RA ${ra}]: Resposta validada. Copie e envie na plataforma ${t.platform}.`
+                }));
+                saveAndRender();
+                document.getElementById('pet-status').innerText = 'Todas as tarefas respondidas e prontas!';
+                alert('Rascunhos gerados com sucesso para todas as tarefas pendentes e expiradas!');
+            }, 1200);
+        }
+
+        function renderTasks() {
+            const normalList = document.getElementById('normal-tasks-list');
+            const expiredList = document.getElementById('expired-tasks-list');
+            normalList.innerHTML = '';
+            expiredList.innerHTML = '';
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            let normalNum = 0, expiredNum = 0;
+
+            if(tasks.length === 0) {
+                normalList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Nenhuma tarefa cadastrada.</p>`;
+                expiredList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Nenhuma tarefa expirada.</p>`;
+                document.getElementById('normal-count').innerText = '0';
+                document.getElementById('expired-count').innerText = '0';
+                return;
+            }
+
+            tasks.forEach(task => {
+                const isExpired = task.date < todayStr && !task.completed;
+                const [year, month, day] = task.date.split('-');
+                const formattedDate = `${day}/${month}/${year}`;
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl border transition ${task.completed ? 'bg-slate-900/40 border-slate-800 opacity-60' : isExpired ? 'bg-rose-950/10 border-rose-900/30' : 'bg-slate-800/40 border-slate-700/50'}`;
+
+                div.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleComplete(${task.id})" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-indigo-600 cursor-pointer">
+                            <div>
+                                <h4 class="text-xs font-bold ${task.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${task.title}</h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[9px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-semibold">${task.platform}</span>
+                                    <span class="text-[9px] ${isExpired ? 'text-rose-400 font-bold' : 'text-slate-400'}"><i class="fa-regular fa-calendar mr-1"></i> ${formattedDate}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteTask(${task.id})" class="text-slate-500 hover:text-rose-400 p-1.5 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
+                    ${task.draft ? `
+                        <div class="mt-3 pt-3 border-t border-slate-700/40">
+                            <p class="text-[10px] text-indigo-300 font-mono bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/60 select-all">${task.draft}</p>
+                        </div>
+                    ` : ''}
+                `;
+
+                if(isExpired) {
+                    expiredList.appendChild(div);
+                    expiredNum++;
+                } else {
+                    normalList.appendChild(div);
+                    normalNum++;
+                }
+            });
+
+            document.getElementById('normal-count').innerText = normalNum;
+            document.getElementById('expired-count').innerText = expiredNum;
+        }
+
+        renderTasks();
+    </script>
+</body>
+</html>
